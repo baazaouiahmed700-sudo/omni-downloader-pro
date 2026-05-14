@@ -1,0 +1,36 @@
+# render.yaml — Omni-Downloader Pro
+# Deploy as a Web Service on Render.com
+
+services:
+  - type: web
+    name: omni-downloader-pro
+    runtime: python
+    region: oregon          # cheapest / fastest for most users; change to frankfurt for EU
+
+    # ── Build ──────────────────────────────────────────────────────────────
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+
+    # ── Start ──────────────────────────────────────────────────────────────
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+
+    # ── Health Check ───────────────────────────────────────────────────────
+    healthCheckPath: /health
+
+    # ── Environment Variables ──────────────────────────────────────────────
+    # Set these in the Render dashboard (never commit real values here!)
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false            # Set manually in dashboard
+
+      - key: GEMINI_API_KEY
+        sync: false            # Set manually in dashboard (optional)
+
+      - key: WEBHOOK_URL
+        sync: false
+        # Value: https://<your-service-name>.onrender.com
+        # Set AFTER first deploy (you need the URL first)
